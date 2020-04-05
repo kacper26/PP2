@@ -19,3 +19,11 @@
 - pobranie kodu jednej strony z opiniami o konkretnym produkcie
 - wyciągnięcie z kodu strony fragmentów odpowiadających poszczególnym opiniom
 - zapisanie do pojedynczych zmiennych wartości poszczególnych składowych opinii
+## Etap 3 - pobranie wszystkich opinii o pojedynczym produkcie
+-zapisanie do złożonej struktury danych składowych wszystkich opinii z pojedynczej strony
+-przechodzenie po kolejnych stronach z opiniami
+-zapis wszystkich opinii o pojedynczym produkcie
+## Etap 4
+-transformacja i wyczyszczenie danych
+-refaktoring kodu
+-parametryzacja
