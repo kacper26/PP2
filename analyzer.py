@@ -45,6 +45,6 @@ plt.title("<<<<<Rekomendacja>>>>")
 plt.savefig("figures_png/" + product_id + "_pie.png")
 plt.close()
 
-#opinions['purchased'] = opinions.purchase_date != None
-#stars_purchased = pd.crosstab(opinions['stars'], opinions["purchased"])
-#print(stars_purchased)
+opinions['purchased'] = opinions.purchase_date != None
+stars_purchased = pd.crosstab(opinions['stars'], opinions["purchased"])
+print(stars_purchased)
