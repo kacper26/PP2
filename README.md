@@ -2,7 +2,7 @@
 ## Etap 1 - analiza struktury opinii w serwisie [Ceneo.pl](https://www.ceneo.pl/)
 |Składowa                |Selektor                                 |Nazwa zmiennej|
 |------------------------|-----------------------------------------|--------------|
-|opinia                  |li.js_product-review                     |              |
+|opinia                  |div.js_product-review                     |              |
 |identyfikator opinii    |["data-entry-id"]                        |              |
 |autor                   |div.reviewer-name-line                   |              |
 |rekomendacja            |div.product-review-summary > em          |              |
@@ -32,4 +32,20 @@
 - policzenie podstawowych statystyk
 - narysowanie wykresów funkcji 
 ## Etap 6 interfejs webowy dla scrapera (Flask)
+>    /Ceneoscrapper.py 
+>>        /run.py  
+>>        /config.py  
+>>        /app  
+>>>            /__init__.py
+>>>            /views.py  
+>>>            /models.py  
+>>>            /static/  
+>>>>                /main.css
+>>>>                /figures_png
+>>>            /templates/  
+>>>>                    /layout.html
+>>>>                    /extract.html
+>>>            /opinions_json  
+>>>        /requirements.txt  
+>>>        /.venv
 

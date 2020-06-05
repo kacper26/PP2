@@ -8,23 +8,24 @@ import json
 def extract_feature(opinion,selector,attribute=None):
     try:
         if attribute:
-            return opinion.select(selector).pop()[attribute].strip()
+            return opinion.select(selector).pop(0)[attribute].strip()
         else:
-            return opinion.select(selector).pop().text.strip()
+            return opinion.select(selector).pop(0).text.strip()
     except IndexError:
         return None
 
+#słownik z atrybutami opinii i ich selektorami
 selectors = {
-    "author":["div.reviewer-name-line"],
-    "recommendation": ["div.product-review-summary > em"],
-    "stars": ["span.review-score-count"],
-    "content": ["p.product-review-body"],
-    "cons": ["div.cons-cell > ul"],
-    "pros": ["button.vote-yes > span"],
+    "author":["span.user-post__author-name"],
+    "recommendation": ["span.user-post__author-recommendation > em"],
+    "stars": ["span.user-post__score-count"],
+    "content": ["div.user-post__text"],
+    "cons": ["div.review-feature__col:has(> div.review-feature__title--negatives)"],
+    "pros": ["div.review-feature__col:has(> div.review-feature__title--positives)"],
     "useful": ["button.vote-yes > span"],
     "useless":["button.vote-no > span"],
-    "opinion_date":["span.review-time > time:nth-child(1)", "datetime"],
-    "purchase_date":["span.review-time > time:nth-child(2)","datetime"],
+    "opinion_date":["span.user-post__published > time:nth-child(1)", "datetime"],
+    "purchase_date":["span.user-post__published > time:nth-child(2)","datetime"],
 }
 #adres url pierwszej strony z opiniami o produkcie
 url_prefix = "https://www.ceneo.pl"
@@ -52,11 +53,11 @@ while url:
         features["stars"] = float(features["stars"].split('/')[0].replace(',', '.'))
         features["content"] = features["content"].replace('\n', " ").replace("\r", " ")
         try:
-            features["pros"] = features["pros"].replace("\n", ", ").replace("\r", ", ")
+            features["pros"] = features["pros"].replace("\n", ", ").replace("\r", ", ").replace("Zalety", ", ")
         except AttributeError:
             pass
         try:
-            features["cons"] = features["cons"].replace("\n", ", ").replace("\r", ", ")
+            features["cons"] = features["cons"].replace("\n", ", ").replace("\r", ", ").replace("Wady", ", ")
         except AttributeError:
             pass
         all_opinions.append(features)
@@ -70,4 +71,4 @@ while url:
 with open ("./opinions_json/" + product_id + ".json", 'w', encoding="UTF-8") as fp:
     json.dump(all_opinions, fp, indent=4, ensure_ascii=False)
 
-#pprint.pprint(features)
+#pprint.pprint(features) 
