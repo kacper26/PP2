@@ -27,48 +27,49 @@ selectors = {
     "opinion_date":["span.user-post__published > time:nth-child(1)", "datetime"],
     "purchase_date":["span.user-post__published > time:nth-child(2)","datetime"],
 }
-#adres url pierwszej strony z opiniami o produkcie
-url_prefix = "https://www.ceneo.pl"
-product_id = input("Podaj identyfikator produktu: ")
-url_postfix = "#tab=reviews"
-url = url_prefix + "/" + product_id + url_postfix
 
-#pusta lista na opinie konsumentów
-all_opinions = []
+def scraper(product_id):
+    #adres url pierwszej strony z opiniami o produkcie
+    url_prefix = "https://www.ceneo.pl"
+    url_postfix = "#tab=reviews"
+    url = url_prefix + "/" + product_id + url_postfix
 
-while url:
-    response = requests.get(url)
-    page_dom = BeautifulSoup(response.text, 'html.parser')
+    #pusta lista na opinie konsumentów
+    all_opinions = []
 
-    #wydobycie z kodu strony fragmentów odpowiadających opiniom konsumentów
-    opinions = page_dom.select("li.js_product-review")
+    while url:
+        response = requests.get(url)
+        page_dom = BeautifulSoup(response.text, 'html.parser')
 
-    #dla wszystkich opinii wydobycie jej składowych
-    for opinion in opinions:
-        features = {key:extract_feature(opinion, *args)
-                    for key, args in selectors.items()}
-        features["opinion_id"] = int(opinion["data-entry-id"])
-        features["useful"] = int(features["useful"])
-        features["useless"] = int(features["useless"])
-        features["stars"] = float(features["stars"].split('/')[0].replace(',', '.'))
-        features["content"] = features["content"].replace('\n', " ").replace("\r", " ")
+        #wydobycie z kodu strony fragmentów odpowiadających opiniom konsumentów
+        opinions = page_dom.select("div.js_product-review")
+
+        #dla wszystkich opinii wydobycie jej składowych
+        for opinion in opinions:
+            features = {key:extract_feature(opinion, *args)
+                        for key, args in selectors.items()}
+            features["opinion_id"] = int(opinion["data-entry-id"])
+            features["useful"] = int(features["useful"])
+            features["useless"] = int(features["useless"])
+            features["stars"] = float(features["stars"].split('/')[0].replace(',', '.'))
+            features["content"] = features["content"].replace('\n', " ").replace("\r", " ")
+            try:
+                features["pros"] = features["pros"].replace("\n", ", ").replace("\r", ", ").replace("Zalety", ", ")
+            except AttributeError:
+                pass
+            try:
+                features["cons"] = features["cons"].replace("\n", ", ").replace("\r", ", ").replace("Wady", ", ")
+            except AttributeError:
+                pass
+            all_opinions.append(features)
         try:
-            features["pros"] = features["pros"].replace("\n", ", ").replace("\r", ", ").replace("Zalety", ", ")
-        except AttributeError:
-            pass
-        try:
-            features["cons"] = features["cons"].replace("\n", ", ").replace("\r", ", ").replace("Wady", ", ")
-        except AttributeError:
-            pass
-        all_opinions.append(features)
-    try:
-        url = url_prefix + page_dom.select("a.pagination__next").pop()["href"]
-    except IndexError:
-        url = None
-    print(len(all_opinions))
-    print(url)
+            url = url_prefix + page_dom.select("a.pagination__next").pop()["href"]
+        except IndexError:
+            url = None
+        print(len(all_opinions))
+        print(url)
 
-with open ("./opinions_json/" + product_id + ".json", 'w', encoding="UTF-8") as fp:
-    json.dump(all_opinions, fp, indent=4, ensure_ascii=False)
+    with open ("app/opinions_json/" + product_id + ".json", 'w', encoding="UTF-8") as fp:
+        json.dump(all_opinions, fp, indent=4, ensure_ascii=False)
 
-#pprint.pprint(features) 
+    #pprint.pprint(all_opinions) 
